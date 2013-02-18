@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/aop		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/context	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+<!-- 
+	<context:annotation-config />
+	<context:component-scan base-package="mark.aop" />
+	<aop:aspectj-autoproxy />
+-->
+
+	<!-- CB -->
+	<bean id="circuitBreakerService" class="cb.CircuitBreakerService" />
+	
+	<bean id="circuitBreakerInterceptor"
+		class="cb.CircuitBreakerInterceptor">
+		<constructor-arg index="0" value="3" />
+		<constructor-arg index="1" value="2000" />
+		<property name="nonTrippingExceptions">
+			<list>
+				<value>java.lang.IllegalArgumentException</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames" value="*Service" />
+		<property name="interceptorNames">
+			<list>
+				<value>circuitBreakerInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- CB -->
+</beans>
